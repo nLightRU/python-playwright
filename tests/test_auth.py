@@ -1,5 +1,5 @@
 import pytest
-from playwright.sync_api import Playwright, Page, expect
+from playwright.sync_api import Playwright, Page, expect, Browser
 
 # To Do: Check placeholder
 # To Do: Вынести сообщения об ошибках отдельно
@@ -17,14 +17,24 @@ def test_success_auth(playwright: Playwright, page: Page):
 
 
 # Тест выхода из аккаунта
-# Здесь надо тестить сразу на залогиненом аккаунте!!!!
 @pytest.mark.auth
-@pytest.mark.skip(reason="Not implemented yet")
-def test_logout(playwright: Playwright, page: Page):
+def test_logout(playwright: Playwright, browser: Browser):
+    context = browser.new_context()
+    context.add_cookies([{
+        'name': 'session-username',
+        'value': 'standard_user',
+        'domain': 'www.saucedemo.com',
+        'path': '/'
+    }])
+    page = context.new_page()
     playwright.selectors.set_test_id_attribute('data-test')
-    page.goto('https://www.saucedemo.com/')
+    page.goto('https://www.saucedemo.com/inventory.html')
+    page.locator('#react-burger-menu-btn').click()
+    page.locator('#logout_sidebar_link').click()
+    expect(page.get_by_test_id('login-button')).to_be_visible()
 
 
+#Тест заблокированного пользователя
 @pytest.mark.auth
 def test_locked_out_user(playwright: Playwright, page: Page):
     playwright.selectors.set_test_id_attribute('data-test')
@@ -69,7 +79,17 @@ def test_wrong_username(playwright: Playwright, page: Page):
     page.get_by_test_id('password').fill('secret_sauce')
     page.get_by_test_id('login-button').click()
     expect(page.get_by_test_id('error')).to_be_visible()
-    expect(page.get_by_text('Epic sadface: Username and password do not match any user in this service')).to_be_visible()
+    expect(page.get_by_test_id('error')).to_have_text('Epic sadface: Username and password do not match any user in this service')
+
+
+# Не открывается страница если пользователь не авторизован
+@pytest.mark.auth
+@pytest.mark.negative
+def test_no_auth(playwright: Playwright, page: Page):
+    playwright.selectors.set_test_id_attribute('data-test')
+    page.goto('https://www.saucedemo.com/inventory.html')
+    expect(page.get_by_test_id('error')).to_be_visible()
+    expect(page.get_by_test_id('error')).to_have_text("Epic sadface: You can only access '/inventory.html' when you are logged in.")
 
 
 # Наличие плейсхолдеров и их правильное значение
