@@ -10,6 +10,7 @@ class LoginPage:
     def login(self, username: str, password: str):
         self.username_input.fill(username)
         self.pass_input.fill(password)
+        self.login_button.click()
     
 
     
