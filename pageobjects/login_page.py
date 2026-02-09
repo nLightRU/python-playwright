@@ -1,4 +1,4 @@
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 
 class LoginPage:
     def __init__(self, page: Page):
@@ -11,6 +11,4 @@ class LoginPage:
         self.username_input.fill(username)
         self.pass_input.fill(password)
         self.login_button.click()
-    
-
-    
+        
