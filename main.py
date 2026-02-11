@@ -20,6 +20,8 @@ def cart_badge_count(page: Page) -> int:
     badge = page.get_by_test_id('shopping-cart-badge')
     return int(badge.text_content())
     
+def item_price(price_str: str):
+    return float(price_str[1:])
 
 if __name__ == '__main__':
     with sync_playwright() as p:
@@ -29,10 +31,11 @@ if __name__ == '__main__':
         page.goto('https://www.saucedemo.com')
         login(page)
         items = get_inventory_list(page)
-        items[0].get_by_role('button').click()
-        
-        # print(cart_badge_count(page))
 
-        # assert cart_badge_count(page) == 1
+        # Взаимодействуем с сайтом после логина
+
+        price = items[0].get_by_test_id('inventory-item-price').text_content()
+        print(price)
+        print(item_price(price))
 
         time.sleep(5)
