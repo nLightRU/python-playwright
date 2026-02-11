@@ -7,7 +7,7 @@ def playwright_settings(playwright: Playwright):
     return playwright
 
 @pytest.fixture
-def base_url():
+def shop_url():
     return 'https://www.saucedemo.com/'
 
 @pytest.fixture
@@ -17,11 +17,3 @@ def items_url():
 @pytest.fixture
 def cart_url():
     return 'https://www.saucedemo.com/cart.html'
-
-@pytest.fixture
-def no_input_error_message():
-    return 'Epic sadface: Username is required'
-
-@pytest.fixture
-def wrong_input_error_message():
-    return 'Epic sadface: Username and password do not match any user in this service'
